@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
 
 const fallbackCharacters = [
   {
@@ -172,13 +173,29 @@ const fallbackCharacters = [
   ];
 
 export async function GET(req: NextRequest) {
+    const prisma = new PrismaClient();
+
     try {
-          return NextResponse.json({ success: true, data: fallbackCharacters });
+        // Attempt to fetch from database
+        const characters = await prisma.character.findMany({
+            include: {
+                stats: true,
+                connections: true,
+                images: true,
+            },
+        });
+
+        if (characters && characters.length > 0) {
+            return NextResponse.json({ success: true, data: characters });
+        }
+
+        // Fallback to hardcoded data if database is empty
+        return NextResponse.json({ success: true, data: fallbackCharacters });
     } catch (error) {
-          console.error('Failed to fetch characters:', error);
-          return NextResponse.json(
-            { success: false, error: 'Failed to fetch characters' },
-            { status: 500 }
-                );
+        console.error('Database fetch failed, using fallback data:', error);
+        // Return fallback data if database is not available
+        return NextResponse.json({ success: true, data: fallbackCharacters });
+    } finally {
+        await prisma.$disconnect();
     }
 }
