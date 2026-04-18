@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  @apply border-border-primary;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-bg-dark text-text-primary;
+  font-feature-settings: 'rlig' 1, 'calt' 1;
+}
+
+/* 2042 Theme */
+@layer base {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-bg-dark;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border-secondary hover:bg-border-primary rounded;
+  }
+
+  /* Custom selection color */
+  ::selection {
+    @apply bg-accent-gold bg-opacity-20 text-accent-goldLight;
+  }
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-in {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideInLeft 0.3s ease-out;
+}
+
+/* Glass effect */
+.glass {
+  @apply bg-bg-card/50 backdrop-blur-md border border-border-primary;
+}
+
+/* Glow effect for accent elements */
+.glow-accent {
+  @apply text-accent-gold drop-shadow-lg;
+}

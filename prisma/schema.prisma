@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Character {
+  id            String   @id @default(cuid())
+  code          String   @unique
+  name          String
+  subtitle      String
+  faction       String
+  bio           String
+  quote         String
+  colorPrimary  String
+  colorSecondary String
+
+  // Relations
+  connections   Connection[]
+  stats         Stat[]
+  images        CharacterImage?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("characters")
+}
+
+model Connection {
+  id          String   @id @default(cuid())
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  connectedTo String   // Character code
+  description String
+
+  createdAt   DateTime @default(now())
+
+  @@index([characterId])
+  @@map("connections")
+}
+
+model Stat {
+  id          String   @id @default(cuid())
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  label       String
+  value       Int      // 0-10
+
+  createdAt   DateTime @default(now())
+
+  @@index([characterId])
+  @@map("stats")
+}
+
+model CharacterImage {
+  id          String   @id @default(cuid())
+  characterId String   @unique
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  cardImage   String   // Path to card image
+  portrait    String   // Path to portrait image
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("character_images")
+}
+
+model Scenario {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  content     String?  // Editor content (JSON or markdown)
+
+  characters  String? // Comma-separated array of character codes involved
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("scenarios")
+}
